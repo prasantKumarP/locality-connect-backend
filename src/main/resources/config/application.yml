@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: locality-connect
+
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+
+  task:
+    scheduling:
+      pool:
+        size: 5
+
+server:
+  port: 8080
+
+jwt:
+  secret: your-32-character-secret-key-here
+  expiration: 86400000
+
+logging:
+  level:
+    com.localityconnect: DEBUG
+    org.springframework.security: DEBUG
+
+
