@@ -18,3 +18,7 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+firebase:
+  database:
+    url: https://locality-connect-default-rtdb.firebaseio.com
