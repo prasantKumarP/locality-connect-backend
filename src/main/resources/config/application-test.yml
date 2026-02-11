@@ -21,4 +21,4 @@ spring:
 
 firebase:
   database:
-    url: https://locality-connect-default-rtdb.firebaseio.com
+    url: https://locality-connect-default-rtdb.asia-southeast1.firebasedatabase.app

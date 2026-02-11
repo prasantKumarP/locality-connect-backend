@@ -24,15 +24,22 @@ public class FirebaseConfig {
                     
                     FirebaseOptions options = FirebaseOptions.builder()
                             .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                            .setDatabaseUrl("https://locality-connect-default-rtdb.asia-southeast1.firebasedatabase.app")
                             .build();
                     
                     FirebaseApp.initializeApp(options);
                     System.out.println("Firebase Admin SDK initialized successfully");
+
+                    //for testing
+                    System.out.println("Firebase apps: " + FirebaseApp.getApps());
+                    FirebaseApp app = FirebaseApp.getInstance();
+                    System.out.println("Database URL: " + app.getOptions().getDatabaseUrl());
                 } catch (IOException e) {
                     // If file doesn't exist, use default credentials
                     System.out.println("Firebase service account file not found, using default credentials");
                     FirebaseOptions options = FirebaseOptions.builder()
                             .setCredentials(GoogleCredentials.getApplicationDefault())
+                            .setDatabaseUrl("https://locality-connect-default-rtdb.asia-southeast1.firebasedatabase.app")
                             .build();
                     
                     FirebaseApp.initializeApp(options);

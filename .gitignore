@@ -42,3 +42,4 @@ logs/
 ### Database ###
 *.db
 src/main/resources/firebase-service-account.json
+*.code-workspace
