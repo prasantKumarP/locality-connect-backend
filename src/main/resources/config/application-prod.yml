@@ -1,6 +1,8 @@
 spring:
   datasource:
-    url: ${DATABASE_URL}
+    url: jdbc:postgresql://dpg-d6c7q84r85hc73eqseb0-a:5432/locality_connect_db
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
