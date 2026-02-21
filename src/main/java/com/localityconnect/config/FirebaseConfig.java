@@ -7,47 +7,66 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 public class FirebaseConfig {
-    
+
+    private static final String DATABASE_URL =
+            "https://locality-connect-default-rtdb.asia-southeast1.firebasedatabase.app";
+
     @PostConstruct
     public void initialize() {
         try {
-            // Check if FirebaseApp is already initialized
-            if (FirebaseApp.getApps().isEmpty()) {
-                // Try to load from service account key file
-                try {
-                    InputStream serviceAccount = new ClassPathResource("firebase-service-account.json").getInputStream();
-                    
-                    FirebaseOptions options = FirebaseOptions.builder()
-                            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                            .setDatabaseUrl("https://locality-connect-default-rtdb.asia-southeast1.firebasedatabase.app")
-                            .build();
-                    
-                    FirebaseApp.initializeApp(options);
-                    System.out.println("Firebase Admin SDK initialized successfully");
 
-                    //for testing
-                    System.out.println("Firebase apps: " + FirebaseApp.getApps());
-                    FirebaseApp app = FirebaseApp.getInstance();
-                    System.out.println("Database URL: " + app.getOptions().getDatabaseUrl());
-                } catch (IOException e) {
-                    // If file doesn't exist, use default credentials
-                    System.out.println("Firebase service account file not found, using default credentials");
-                    FirebaseOptions options = FirebaseOptions.builder()
-                            .setCredentials(GoogleCredentials.getApplicationDefault())
-                            .setDatabaseUrl("https://locality-connect-default-rtdb.asia-southeast1.firebasedatabase.app")
-                            .build();
-                    
-                    FirebaseApp.initializeApp(options);
-                }
+            if (!FirebaseApp.getApps().isEmpty()) {
+                return;
             }
+
+            FirebaseOptions options;
+
+            // 🔥 1️⃣ Try environment variable first (Render production)
+            String firebaseEnv = System.getenv("FIREBASE_SERVICE_ACCOUNT");
+
+            if (firebaseEnv != null && !firebaseEnv.isBlank()) {
+
+                System.out.println("Initializing Firebase using ENV variable");
+
+                InputStream serviceAccount =
+                        new ByteArrayInputStream(
+                                firebaseEnv.getBytes(StandardCharsets.UTF_8)
+                        );
+
+                options = FirebaseOptions.builder()
+                        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                        .setDatabaseUrl(DATABASE_URL)
+                        .build();
+
+            } else {
+
+                // 🔥 2️⃣ Fallback to local JSON file (development)
+                System.out.println("FIREBASE_SERVICE_ACCOUNT not found, trying local file");
+
+                InputStream serviceAccount =
+                        new ClassPathResource("firebase-service-account.json")
+                                .getInputStream();
+
+                options = FirebaseOptions.builder()
+                        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                        .setDatabaseUrl(DATABASE_URL)
+                        .build();
+            }
+
+            FirebaseApp.initializeApp(options);
+
+            System.out.println("Firebase initialized successfully");
+            System.out.println("Firebase apps: " + FirebaseApp.getApps());
+
         } catch (Exception e) {
             System.err.println("Error initializing Firebase: " + e.getMessage());
-            // Don't throw exception - allow app to start even if Firebase isn't configured
+            // Do NOT crash app
         }
     }
 }
